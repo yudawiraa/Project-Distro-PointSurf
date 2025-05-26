@@ -43,7 +43,8 @@ class TransaksiController extends Controller
             'status_pembayaran' => $request->input('status_pembayaran'),
         ]);
 
-        return redirect()->route('transaksi.index');
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Data transaksi berhasil ditambahkan!');
     }
 
     public function show($id)

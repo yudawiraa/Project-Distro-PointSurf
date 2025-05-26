@@ -35,7 +35,8 @@ class PenggunaController extends Controller
             'role' => $request->input('role'),
         ]);
 
-        return redirect()->route('pengguna.index');
+        return redirect()->route('pengguna.index')
+            ->with('success', 'Data pengguna berhasil ditambahkan!');
     }
 
     public function show($id)

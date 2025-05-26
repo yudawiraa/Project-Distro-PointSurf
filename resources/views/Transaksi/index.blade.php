@@ -3,6 +3,12 @@
 @section('title', 'Daftar Transaksi')
 
 @section('content')
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <h1>Daftar Transaksi</h1>
 
     <ul>

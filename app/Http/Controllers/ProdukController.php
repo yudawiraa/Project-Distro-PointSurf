@@ -37,7 +37,8 @@ class ProdukController extends Controller
             'kategori' => $request->input('kategori'),
         ]);
 
-        return redirect()->route('produk.index');
+        return redirect()->route('produk.index')
+            ->with('success', 'Data produk berhasil ditambahkan!');
     }
 
     public function show($id)

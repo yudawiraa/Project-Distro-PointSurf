@@ -26,7 +26,6 @@ class PelangganController extends Controller
             'alamat' => 'required|string|max:255',
             'no_telepon' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:pelanggans,email,',
-
         ]);
 
         Pelanggan::create([
@@ -36,7 +35,8 @@ class PelangganController extends Controller
             'email' => $request->input('email'),
         ]);
 
-        return redirect()->route('pelanggan.index');
+        return redirect()->route('pelanggan.index')
+            ->with('success', 'Data pelanggan berhasil ditambahkan!');
     }
 
     public function show($id)
