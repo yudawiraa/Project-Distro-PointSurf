@@ -510,7 +510,127 @@
                     </div>
                   </div>
                 </div>              </div>
+            </div>            <div class="row">
+              <div class="col-md-8">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Statistik Penjualan</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container">
+                      <canvas id="salesChart" style="width: 100%; height: 300px;"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Top Transaksi</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Pelanggan</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($topTransaksi ?? [] as $transaksi)
+                          <tr>                            <td>{{ $transaksi->pelanggan->nama }}</td>
+                            <td>Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}</td>
+                          </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Produk Tersedia</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Nama Produk</th>
+                            <th>Stok</th>
+                            <th>Harga</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($productsInStock as $product)                          <tr>
+                            <td>{{ $product->nama_produk }}</td>
+                            <td>{{ $product->stok }}</td>
+                            <td>Rp {{ number_format($product->harga, 0, ',', '.') }}</td>
+                            <td>
+                              <a href="{{ route('produk.show', $product->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                              </a>
+                            </td>
+                          </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="card-footer">
+                      <a href="{{ route('produk.index') }}" class="btn btn-sm btn-secondary">
+                        Lihat Semua Produk
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="card-title">Produk Habis</div>
+                  </div>
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Nama Produk</th>
+                            <th>Terakhir Update</th>
+                            <th>Harga</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($productsOutOfStock as $product)                          <tr>
+                            <td>{{ $product->nama_produk }}</td>
+                            <td>{{ $product->updated_at->format('d/m/Y') }}</td>
+                            <td>Rp {{ number_format($product->harga, 0, ',', '.') }}</td>
+                            <td>
+                              <a href="{{ route('produk.show', $product->id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                              </a>
+                            </td>
+                          </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="card-footer">
+                      <a href="{{ route('produk.index') }}" class="btn btn-sm btn-secondary">
+                        Lihat Semua Produk
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
         
@@ -772,6 +892,77 @@
         lineWidth: "2",
         lineColor: "#ffa534",
         fillColor: "rgba(255, 165, 52, .14)",
+      });
+
+      // Grafik Penjualan
+      var ctx = document.getElementById('salesChart').getContext('2d');
+      var salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
+          datasets: [{
+            label: 'Total Penjualan',
+            data: [12000000, 15000000, 18000000, 14000000, 16000000, 19000000, 22000000, 20000000, 23000000, 25000000, 28000000, 30000000],
+            backgroundColor: [
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)',
+              'rgba(23, 125, 255, 0.6)'
+            ],
+            borderColor: [
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)',
+              'rgba(23, 125, 255, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: function(value, index, values) {
+                  return 'Rp ' + new Intl.NumberFormat('id-ID').format(value);
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: true,
+              text: 'Statistik Penjualan Bulanan'
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return 'Penjualan: Rp ' + new Intl.NumberFormat('id-ID').format(context.raw);
+                }
+              }
+            }
+          }
+        }
       });
     </script>
   </body>

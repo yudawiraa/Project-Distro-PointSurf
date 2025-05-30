@@ -7,6 +7,7 @@ use App\Models\Transaksi;
 use App\Models\Pelanggan;
 use App\Models\Produk;
 use App\Models\Pengguna;
+use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
@@ -20,7 +21,7 @@ class TransaksiController extends Controller
     public function create()
     {
         $pelanggans = Pelanggan::all();
-        $produks = Produk::all();
+        $produks = Produk::where('stok', '>', 0)->get(); // Hanya tampilkan produk yang masih ada stoknya
         $penggunas = Pengguna::all();
         
         return view('transaksi.create', compact('pelanggans', 'produks', 'penggunas'));
@@ -38,20 +39,45 @@ class TransaksiController extends Controller
 
         $produk = Produk::findOrFail($request->produk_id);
         
-        // Calculate total_harga
-        $total_harga = $produk->harga * $request->jumlah;
+        // Validasi stok tersedia
+        if ($produk->stok < $request->jumlah) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['jumlah' => 'Stok produk tidak mencukupi. Stok tersedia: ' . $produk->stok]);
+        }
 
-        Transaksi::create([
-            'pelanggan_id' => $request->pelanggan_id,
-            'produk_id' => $request->produk_id,
-            'jumlah' => $request->jumlah,
-            'tanggal_transaksi' => $request->tanggal_transaksi,
-            'total_harga' => $total_harga,
-            'status' => $request->status
-        ]);
+        try {
+            DB::beginTransaction();
+            
+            // Calculate total_harga
+            $total_harga = $produk->harga * $request->jumlah;
 
-        return redirect()->route('transaksi.index')
-            ->with('success', 'Transaksi berhasil ditambahkan!');
+            // Kurangi stok produk
+            $produk->update([
+                'stok' => $produk->stok - $request->jumlah
+            ]);
+
+            // Buat transaksi
+            Transaksi::create([
+                'pelanggan_id' => $request->pelanggan_id,
+                'produk_id' => $request->produk_id,
+                'jumlah' => $request->jumlah,
+                'tanggal_transaksi' => $request->tanggal_transaksi,
+                'total_harga' => $total_harga,
+                'status' => $request->status
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('transaksi.index')
+                ->with('success', 'Transaksi berhasil ditambahkan!');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat membuat transaksi: ' . $e->getMessage());
+        }
     }
 
     public function show($id)
@@ -80,36 +106,106 @@ class TransaksiController extends Controller
             'status' => 'required|in:pending,proses,selesai'
         ]);
 
-        $transaksi = Transaksi::findOrFail($id);
-        $produk = Produk::findOrFail($request->produk_id);
-        
-        // Calculate total_harga
-        $total_harga = $produk->harga * $request->jumlah;
+        try {
+            DB::beginTransaction();
 
-        $transaksi->update([
-            'pelanggan_id' => $request->pelanggan_id,
-            'produk_id' => $request->produk_id,
-            'jumlah' => $request->jumlah,
-            'tanggal_transaksi' => $request->tanggal_transaksi,
-            'total_harga' => $total_harga,
-            'status' => $request->status
-        ]);
+            $transaksi = Transaksi::findOrFail($id);
+            $produk_lama = Produk::findOrFail($transaksi->produk_id);
+            $produk_baru = Produk::findOrFail($request->produk_id);
+            
+            // Kembalikan stok produk lama jika produk berbeda
+            if ($transaksi->produk_id != $request->produk_id) {
+                $produk_lama->update([
+                    'stok' => $produk_lama->stok + $transaksi->jumlah
+                ]);
+                
+                // Cek stok produk baru
+                if ($produk_baru->stok < $request->jumlah) {
+                    DB::rollback();
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['jumlah' => 'Stok produk tidak mencukupi. Stok tersedia: ' . $produk_baru->stok]);
+                }
+                
+                // Kurangi stok produk baru
+                $produk_baru->update([
+                    'stok' => $produk_baru->stok - $request->jumlah
+                ]);
+            } else {
+                // Jika produk sama, hitung selisih jumlah
+                $selisih = $request->jumlah - $transaksi->jumlah;
+                
+                // Cek apakah stok mencukupi jika ada penambahan jumlah
+                if ($selisih > 0 && $produk_baru->stok < $selisih) {
+                    DB::rollback();
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['jumlah' => 'Stok produk tidak mencukupi. Stok tersedia: ' . $produk_baru->stok]);
+                }
+                
+                // Update stok produk
+                $produk_baru->update([
+                    'stok' => $produk_baru->stok - $selisih
+                ]);
+            }
+            
+            // Calculate total_harga
+            $total_harga = $produk_baru->harga * $request->jumlah;
 
-        return redirect()->route('transaksi.index')
-            ->with('success', 'Transaksi berhasil diupdate!');
+            // Update transaksi
+            $transaksi->update([
+                'pelanggan_id' => $request->pelanggan_id,
+                'produk_id' => $request->produk_id,
+                'jumlah' => $request->jumlah,
+                'tanggal_transaksi' => $request->tanggal_transaksi,
+                'total_harga' => $total_harga,
+                'status' => $request->status
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('transaksi.index')
+                ->with('success', 'Transaksi berhasil diupdate!');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat mengupdate transaksi: ' . $e->getMessage());
+        }
     }
 
     public function delete($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = Transaksi::with('produk')->findOrFail($id);
         return view('transaksi.delete', compact('transaksi'));
     }
 
     public function destroy($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
-        $transaksi->delete();
+        try {
+            DB::beginTransaction();
 
-        return redirect()->route('transaksi.index');
+            $transaksi = Transaksi::findOrFail($id);
+            $produk = Produk::findOrFail($transaksi->produk_id);
+
+            // Kembalikan stok produk
+            $produk->update([
+                'stok' => $produk->stok + $transaksi->jumlah
+            ]);
+
+            // Hapus transaksi
+            $transaksi->delete();
+
+            DB::commit();
+
+            return redirect()->route('transaksi.index')
+                ->with('success', 'Transaksi berhasil dihapus dan stok produk telah dikembalikan!');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat menghapus transaksi: ' . $e->getMessage());
+        }
     }
 }
