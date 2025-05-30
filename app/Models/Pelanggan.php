@@ -19,6 +19,12 @@ class Pelanggan extends Model
 
     public function transaksis()
     {
-        return $this->hasMany(Transaksi::class, 'id_pelanggan');
+        return $this->hasMany(Transaksi::class, 'pelanggan_id');
+    }
+
+    // Get the customer's name
+    public function getNamaAttribute()
+    {
+        return $this->nama_pelanggan;
     }
 }

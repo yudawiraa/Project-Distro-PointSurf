@@ -4,47 +4,54 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaksi;
+use App\Models\Pelanggan;
+use App\Models\Produk;
+use App\Models\Pengguna;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
         return view('transaksi.index', [
-            'transaksis' => Transaksi::all()
+            'transaksis' => Transaksi::with(['pelanggan', 'produk'])->paginate(10)
         ]);
     }
 
     public function create()
     {
-        return view('transaksi.create');
+        $pelanggans = Pelanggan::all();
+        $produks = Produk::all();
+        $penggunas = Pengguna::all();
+        
+        return view('transaksi.create', compact('pelanggans', 'produks', 'penggunas'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'id_pelanggan' => 'required|exists:pelanggans,id',
-            'id_produk' => 'required|exists:produks,id',
-            'id_pengguna' => 'required|exists:penggunas,id',
-            'harga_satuan' => 'required|numeric',
-            'jumlah_beli' => 'required|numeric',
+            'pelanggan_id' => 'required|exists:pelanggans,id',
+            'produk_id' => 'required|exists:produks,id',
+            'jumlah' => 'required|numeric|min:1',
             'tanggal_transaksi' => 'required|date',
-            'total_harga' => 'required|numeric',
-            'status_pembayaran' => 'required|string|max:255'
+            'status' => 'required|in:pending,proses,selesai'
         ]);
 
+        $produk = Produk::findOrFail($request->produk_id);
+        
+        // Calculate total_harga
+        $total_harga = $produk->harga * $request->jumlah;
+
         Transaksi::create([
-            'id_pelanggan' => $request->input('id_pelanggan'),
-            'id_produk' => $request->input('id_produk'),
-            'id_pengguna' => $request->input('id_pengguna'),
-            'harga_satuan' => $request->input('harga_satuan'),
-            'jumlah_beli' => $request->input('jumlah_beli'),
-            'tanggal_transaksi' => $request->input('tanggal_transaksi'),
-            'total_harga' => $request->input('total_harga'),
-            'status_pembayaran' => $request->input('status_pembayaran'),
+            'pelanggan_id' => $request->pelanggan_id,
+            'produk_id' => $request->produk_id,
+            'jumlah' => $request->jumlah,
+            'tanggal_transaksi' => $request->tanggal_transaksi,
+            'total_harga' => $total_harga,
+            'status' => $request->status
         ]);
 
         return redirect()->route('transaksi.index')
-            ->with('success', 'Data transaksi berhasil ditambahkan!');
+            ->with('success', 'Transaksi berhasil ditambahkan!');
     }
 
     public function show($id)
@@ -56,36 +63,40 @@ class TransaksiController extends Controller
     public function edit($id)
     {
         $transaksi = Transaksi::findOrFail($id);
-        return view('transaksi.edit', compact('transaksi'));
+        $pelanggans = Pelanggan::all();
+        $produks = Produk::all();
+        $penggunas = Pengguna::all();
+        
+        return view('transaksi.edit', compact('transaksi', 'pelanggans', 'produks', 'penggunas'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'id_pelanggan' => 'required|exists:pelanggans,id',
-            'id_produk' => 'required|exists:produks,id',
-            'id_pengguna' => 'required|exists:penggunas,id',
-            'harga_satuan' => 'required|numeric',
-            'jumlah_beli' => 'required|numeric',
+            'pelanggan_id' => 'required|exists:pelanggans,id',
+            'produk_id' => 'required|exists:produks,id',
+            'jumlah' => 'required|numeric|min:1',
             'tanggal_transaksi' => 'required|date',
-            'total_harga' => 'required|numeric',
-            'status_pembayaran' => 'required|string|max:255'
+            'status' => 'required|in:pending,proses,selesai'
         ]);
 
         $transaksi = Transaksi::findOrFail($id);
+        $produk = Produk::findOrFail($request->produk_id);
+        
+        // Calculate total_harga
+        $total_harga = $produk->harga * $request->jumlah;
 
         $transaksi->update([
-            'id_pelanggan' => $request->input('id_pelanggan'),
-            'id_produk' => $request->input('id_produk'),
-            'id_pengguna' => $request->input('id_pengguna'),
-            'harga_satuan' => $request->input('harga_satuan'),
-            'jumlah_beli' => $request->input('jumlah_beli'),
-            'tanggal_transaksi' => $request->input('tanggal_transaksi'),
-            'total_harga' => $request->input('total_harga'),
-            'status_pembayaran' => $request->input('status_pembayaran'),
+            'pelanggan_id' => $request->pelanggan_id,
+            'produk_id' => $request->produk_id,
+            'jumlah' => $request->jumlah,
+            'tanggal_transaksi' => $request->tanggal_transaksi,
+            'total_harga' => $total_harga,
+            'status' => $request->status
         ]);
 
-        return redirect()->route('transaksi.show', $id);
+        return redirect()->route('transaksi.index')
+            ->with('success', 'Transaksi berhasil diupdate!');
     }
 
     public function delete($id)

@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_produk'); 
             $table->string('deskripsi'); 
-            $table->decimal('harga');
+            $table->decimal('harga', 10, 2);
             $table->integer('stok');
             $table->string('kategori');
             $table->timestamps(); 

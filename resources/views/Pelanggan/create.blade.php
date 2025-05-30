@@ -3,25 +3,59 @@
 @section('title', 'Tambah Pelanggan')
 
 @section('content')
-    <h2 style="margin-bottom: 16px;">Tambah Pelanggan Baru</h2>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Tambah Pelanggan</h3>
+        </div>
+        <div class="card-body">
+            <form action="{{ route('pelanggan.store') }}" method="POST">
+                @csrf
+                
+                <div class="mb-3">
+                    <label for="nama_pelanggan" class="form-label">Nama Pelanggan</label>
+                    <input type="text" class="form-control @error('nama_pelanggan') is-invalid @enderror" 
+                           id="nama_pelanggan" name="nama_pelanggan" value="{{ old('nama_pelanggan') }}">
+                    @error('nama_pelanggan')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-<form method="POST" action="{{ route('pelanggan.store') }}">
-    @csrf
-    <label>Nama Pelanggan:</label>
-    <input type="text" name="nama_pelanggan"><br><br>
+                <div class="mb-3">
+                    <label for="alamat" class="form-label">Alamat</label>
+                    <textarea class="form-control @error('alamat') is-invalid @enderror" 
+                              id="alamat" name="alamat" rows="3">{{ old('alamat') }}</textarea>
+                    @error('alamat')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-    <label>Alamat:</label>
-    <input type="text" name="alamat"><br><br>
+                <div class="mb-3">
+                    <label for="no_telepon" class="form-label">No Telepon</label>
+                    <input type="text" class="form-control @error('no_telepon') is-invalid @enderror" 
+                           id="no_telepon" name="no_telepon" value="{{ old('no_telepon') }}">
+                    @error('no_telepon')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-    <label>Nomor Telepon:</label>
-    <input type="text" name="no_telepon"><br><br>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                           id="email" name="email" value="{{ old('email') }}">
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
-    <label>Email:</label>
-    <input type="text" name="email"><br><br>
-
-    <button type="submit">Tambah</button>
-</form>
-
-
-    <a href="{{ route('pelanggan.index') }}" style="display: inline-block; margin-top: 20px;">← Kembali ke daftar</a>
+                <div class="d-flex justify-content-between">
+                    <a href="{{ route('pelanggan.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection

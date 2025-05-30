@@ -10,7 +10,7 @@ class PenggunaController extends Controller
     public function index()
     {
         return view('pengguna.index', [
-            'penggunas' => Pengguna::all()
+            'penggunas' => Pengguna::paginate(10)
         ]);
     }
 

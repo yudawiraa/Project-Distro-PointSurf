@@ -5,24 +5,31 @@ use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\ProfileController;
 
+// Require authentication for all routes except login/register
+Route::middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/', function () {
-    return view('home');
+    // Route produk
+    Route::resource('produk', ProdukController::class);
+    Route::get('/produk/{id}/delete', [ProdukController::class, 'delete'])->name('produk.delete');
+
+    // Route pelanggan
+    Route::resource('pelanggan', PelangganController::class);
+    Route::get('/pelanggan/{id}/delete', [PelangganController::class, 'delete'])->name('pelanggan.delete');
+
+    // Route pengguna
+    Route::resource('pengguna', PenggunaController::class);
+    Route::get('/pengguna/{id}/delete', [PenggunaController::class, 'delete'])->name('pengguna.delete');
+
+    // Route transaksi
+    Route::resource('transaksi', TransaksiController::class);
+    Route::get('/transaksi/{id}/delete', [TransaksiController::class, 'delete'])->name('transaksi.delete');
+
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-// Route produk
-Route::resource('produk', ProdukController::class);
-Route::get('/produk/{id}/delete', [ProdukController::class, 'delete'])->name('produk.delete');
-
-// Route pelanggan
-Route::resource('pelanggan', PelangganController::class);
-Route::get('/pelanggan/{id}/delete', [PelangganController::class, 'delete'])->name('pelanggan.delete');
-
-// Route pengguna
-Route::resource('pengguna', PenggunaController::class);
-Route::get('/pengguna/{id}/delete', [PenggunaController::class, 'delete'])->name('pengguna.delete');
-
-// Route transaksi
-Route::resource('transaksi', TransaksiController::class);
-Route::get('/transaksi/{id}/delete', [TransaksiController::class, 'delete'])->name('transaksi.delete');
+require __DIR__.'/auth.php';

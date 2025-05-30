@@ -11,29 +11,21 @@ class Transaksi extends Model
 
     protected $table = 'transaksis';
     protected $fillable = [
-        'id_pelanggan',
-        'id_produk',
-        'id_pengguna',
-        'harga_satuan',
-        'jumlah_beli',
+        'pelanggan_id',
+        'produk_id',
+        'jumlah',
         'tanggal_transaksi',
         'total_harga',
-        'status_pembayaran'
+        'status'
     ];
 
     public function pelanggan()
     {
-        return $this->belongsTo(Pelanggan::class, 'id_pelanggan');
+        return $this->belongsTo(Pelanggan::class, 'pelanggan_id');
     }
 
     public function produk()
     {
-        return $this->belongsTo(Produk::class,'id_produk');
+        return $this->belongsTo(Produk::class, 'produk_id');
     }
-
-    public function pengguna()
-    {
-        return $this->belongsTo(Pengguna::class,'id_pengguna');
-    }
-
 }

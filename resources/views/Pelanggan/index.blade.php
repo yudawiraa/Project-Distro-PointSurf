@@ -3,24 +3,56 @@
 @section('title', 'Daftar Pelanggan')
 
 @section('content')
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Daftar Pelanggan</h1>
+        <a href="{{ route('pelanggan.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Tambah Pelanggan
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama Pelanggan</th>
+                            <th>Email</th>
+                            <th>No. Telepon</th>
+                            <th>Alamat</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($pelanggans as $pelanggan)
+                            <tr>
+                                <td>{{ $pelanggan->id }}</td>
+                                <td>{{ $pelanggan->nama_pelanggan }}</td>
+                                <td>{{ $pelanggan->email }}</td>
+                                <td>{{ $pelanggan->no_telepon }}</td>
+                                <td>{{ Str::limit($pelanggan->alamat, 30) }}</td>
+                                <td class="action-buttons">
+                                    <a href="{{ route('pelanggan.show', $pelanggan->id) }}" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('pelanggan.edit', $pelanggan->id) }}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ route('pelanggan.delete', $pelanggan->id) }}" class="btn btn-danger btn-sm" 
+                                       onclick="return confirm('Apakah Anda yakin ingin menghapus pelanggan ini?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Tidak ada pelanggan.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-    @endif
-
-    <h1>Daftar Pelanggan</h1>
-
-    <ul>
-        @forelse($pelanggans as $p)
-            <li>
-                <a href="/pelanggan/{{ $p['id'] }}">{{ $p['nama_pelanggan'] }}</a>
-            </li>
-        @empty
-            <p>Tidak ada pelanggan.</p>
-        @endforelse
-    </ul>
-
-    <a href="/pelanggan/create" style="display: inline-block; margin-top: 20px;">+ Tambah Pelanggan</a>
-    <br><br>
+    </div>
 @endsection

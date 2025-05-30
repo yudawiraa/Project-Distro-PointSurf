@@ -3,20 +3,48 @@
 @section('title', 'Detail Pelanggan')
 
 @section('content')
-    <h2>Detail Pelanggan</h2>
-
-    <p><strong>ID Pelanggan:</strong> {{ $pelanggan->id }}</p>
-    <p><strong>Nama Pelanggan:</strong> {{ $pelanggan->nama_pelanggan }}</p>
-    <p><strong>Alamat:</strong> {{ $pelanggan->alamat }}<p>
-    <p><strong>Nomor Telepon:</strong> {{ $pelanggan->no_telepon }}</p>
-    <p><strong>Email:</strong> {{ $pelanggan->email }}</p>
-
-    <br>
-
-    <a href="{{ route('pelanggan.edit', $pelanggan->id) }}">✏ Edit</a> |
-    <a href="{{ route('pelanggan.delete', $pelanggan->id) }}">🗑 Hapus</a>
-
-    <br><br>
-
-    <a href="{{ route('pelanggan.index') }}">← Kembali ke daftar</a>
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Detail Pelanggan</h5>
+            <div>
+                <a href="{{ route('pelanggan.edit', $pelanggan->id) }}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{{ route('pelanggan.delete', $pelanggan->id) }}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash"></i> Hapus
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr>
+                    <th width="200">ID Pelanggan</th>
+                    <td>{{ $pelanggan->id }}</td>
+                </tr>
+                <tr>
+                    <th>Nama Pelanggan</th>
+                    <td>{{ $pelanggan->nama_pelanggan }}</td>
+                </tr>
+                <tr>
+                    <th>Alamat</th>
+                    <td>{{ $pelanggan->alamat }}</td>
+                </tr>
+                <tr>
+                    <th>Nomor Telepon</th>
+                    <td>{{ $pelanggan->no_telepon }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ $pelanggan->email }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="card-footer">
+            <a href="{{ route('pelanggan.index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Kembali ke daftar
+            </a>
+        </div>
+    </div>
+</div>
 @endsection
