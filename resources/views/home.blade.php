@@ -47,7 +47,7 @@
         <div class="sidebar-logo">
           <!-- Logo Header -->
           <div class="logo-header" data-background-color="dark">
-            <a href="index.html" class="logo d-flex align-items-center">
+            <a href="{{ route('home') }}" class="logo d-flex align-items-center">
               <h2 class="text-white mb-0 me-2">POINTSURF</h2>
               <i class="fas fa-tshirt text-white" style="font-size: 24px;"></i>
             </a>

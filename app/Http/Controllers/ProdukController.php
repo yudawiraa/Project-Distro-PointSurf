@@ -9,9 +9,9 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        return view('produk.index', [
-            'produks' => Produk::all()
-        ]);
+        // Mengurutkan produk berdasarkan ID terbesar ke terkecil dan menggunakan paginasi
+        $produks = Produk::orderBy('id', 'desc')->paginate(10); // Angka 10 adalah contoh jumlah item per halaman
+        return view('produk.index', compact('produks'));
     }
 
     public function create()

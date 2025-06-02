@@ -18,8 +18,19 @@ class Produk extends Model
         'kategori',
     ];
 
+    /**
+     * Transaksi-transaksi yang dimiliki oleh Produk ini.
+     */
     public function transaksis()
     {
-        return $this->hasMany(Transaksi::class, 'id_produk');
+        return $this->hasMany(Transaksi::class, 'produk_id');
+    }
+
+    /**
+     * Tag-tag yang dimiliki oleh Produk ini.
+     */
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class, 'produk_tag');
     }
 }
