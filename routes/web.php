@@ -30,6 +30,11 @@ Route::middleware('auth')->group(function () {
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    Route::get('/pendaftaran-ktp', function () {
+    return 'Selamat datang di halaman Pendaftaran KTP Online!';
+})->middleware('check.age');
+
 });
 
 require __DIR__.'/auth.php';
