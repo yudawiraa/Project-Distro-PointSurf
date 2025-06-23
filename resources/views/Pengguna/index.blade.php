@@ -12,9 +12,16 @@
             </a>
         </div>
         <div class="card-body">
-            @if(session('success'))
+
+            {{-- Notifikasi sukses --}}
+            @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @elseif (session('errors'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('errors') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             @endif
@@ -56,7 +63,9 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>            <div class="mt-4">
+            </div>            
+
+            <div class="mt-4">
                 {{ $penggunas->links() }}
             </div>
         </div>

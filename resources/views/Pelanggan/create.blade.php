@@ -8,9 +8,34 @@
             <h3 class="card-title">Tambah Pelanggan</h3>
         </div>
         <div class="card-body">
+
+            {{-- Notifikasi sukses --}}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @elseif (session('errors'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('errors') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            {{-- Validasi form --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('pelanggan.store') }}" method="POST">
                 @csrf
-                
+
                 <div class="mb-3">
                     <label for="nama_pelanggan" class="form-label">Nama Pelanggan</label>
                     <input type="text" class="form-control @error('nama_pelanggan') is-invalid @enderror" 

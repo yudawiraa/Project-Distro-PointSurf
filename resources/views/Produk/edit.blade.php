@@ -9,6 +9,20 @@
             <h5 class="mb-0">Edit Produk</h5>
         </div>
         <div class="card-body">
+
+           {{-- Notifikasi sukses --}}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @elseif (session('errors'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('errors') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('produk.update', $produk->id) }}">
                 @csrf
                 @method('PUT')

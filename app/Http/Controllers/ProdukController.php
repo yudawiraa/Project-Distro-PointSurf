@@ -4,14 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Produk;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ProdukController extends Controller
 {
     public function index()
     {
-        // Mengurutkan produk berdasarkan ID terbesar ke terkecil dan menggunakan paginasi
-        $produks = Produk::orderBy('id', 'desc')->paginate(10); // Angka 10 adalah contoh jumlah item per halaman
-        return view('produk.index', compact('produks'));
+        try {
+            $produks = Produk::orderBy('id', 'desc')->paginate(10); // Angka 10 adalah contoh jumlah item per halaman
+            return view('produk.index', compact('produks'));
+        } catch (\Exception $e) {
+            return redirect()->route('produk.index')->withErrors('Terjadi kesalahan saat mengambil data produk.');
+        }
     }
 
     public function create()
@@ -29,28 +33,44 @@ class ProdukController extends Controller
             'kategori' => 'required|string|max:255',
         ]);
 
-        Produk::create([
-            'nama_produk' => $request->input('nama_produk'),
-            'deskripsi' => $request->input('deskripsi'),
-            'harga' => $request->input('harga'),
-            'stok' => $request->input('stok'),
-            'kategori' => $request->input('kategori'),
-        ]);
+        try {
+            Produk::create([
+                'nama_produk' => $request->input('nama_produk'),
+                'deskripsi' => $request->input('deskripsi'),
+                'harga' => $request->input('harga'),
+                'stok' => $request->input('stok'),
+                'kategori' => $request->input('kategori'),
+            ]);
 
-        return redirect()->route('produk.index')
-            ->with('success', 'Data produk berhasil ditambahkan!');
+            return redirect()->route('produk.index')
+                ->with('success', 'Data produk berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->route('produk.create')->withErrors('Terjadi kesalahan saat menyimpan data produk.');
+        }
     }
 
     public function show($id)
     {
-        $produk = Produk::findOrFail($id);
-        return view('produk.show', compact('produk'));
+        try {
+            $produk = Produk::findOrFail($id);
+            return view('produk.show', compact('produk'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('produk.index')->withErrors('Data produk tidak ditemukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('produk.index')->withErrors('Terjadi kesalahan saat mengambil data produk.');
+        }
     }
 
     public function edit($id)
     {
-        $produk = Produk::findOrFail($id);
-        return view('produk.edit', compact('produk'));
+        try {
+            $produk = Produk::findOrFail($id);
+            return view('produk.edit', compact('produk'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('produk.index')->withErrors('Data produk tidak ditemukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('produk.index')->withErrors('Terjadi kesalahan saat mengambil data produk.');
+        }
     }
 
     public function update(Request $request, $id)
@@ -63,30 +83,48 @@ class ProdukController extends Controller
             'kategori' => 'required|string|max:255',
         ]);
 
-        $produk = Produk::findOrFail($id);
+        try {
+            $produk = Produk::findOrFail($id);
 
-        $produk->update([
-            'nama_produk' => $request->input('nama_produk'),
-            'deskripsi' => $request->input('deskripsi'),
-            'harga' => $request->input('harga'),
-            'stok' => $request->input('stok'),
-            'kategori' => $request->input('kategori'),
-        ]);
+            $produk->update([
+                'nama_produk' => $request->input('nama_produk'),
+                'deskripsi' => $request->input('deskripsi'),
+                'harga' => $request->input('harga'),
+                'stok' => $request->input('stok'),
+                'kategori' => $request->input('kategori'),
+            ]);
 
-        return redirect()->route('produk.show', $id);
+            return redirect()->route('produk.show', $id);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('produk.index')->withErrors('Data produk tidak ditemukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('produk.index')->withErrors('Terjadi kesalahan saat memperbarui data produk.');
+        }
     }
 
     public function delete($id)
     {
-        $produk = Produk::findOrFail($id);
-        return view('produk.delete', compact('produk'));
+        try {
+            $produk = Produk::findOrFail($id);
+            return view('produk.delete', compact('produk'));
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('produk.index')->withErrors('Data produk tidak ditemukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('produk.index')->withErrors('Terjadi kesalahan saat mengambil data produk.');
+        }
     }
 
     public function destroy($id)
     {
-        $produk = Produk::findOrFail($id);
-        $produk->delete();
+        try {
+            $produk = Produk::findOrFail($id);
+            $produk->delete();
 
-        return redirect()->route('produk.index');
+            return redirect()->route('produk.index');
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('produk.index')->withErrors('Data produk tidak ditemukan.');
+        } catch (\Exception $e) {
+            return redirect()->route('produk.index')->withErrors('Terjadi kesalahan saat menghapus data produk.');
+        }
     }
 }

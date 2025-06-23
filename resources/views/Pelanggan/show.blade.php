@@ -4,6 +4,19 @@
 
 @section('content')
 <div class="container py-4">
+    {{-- Notifikasi sukses --}}
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @elseif (session('errors'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('errors') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Detail Pelanggan</h5>

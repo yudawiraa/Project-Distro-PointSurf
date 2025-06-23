@@ -8,14 +8,19 @@ use App\Models\Pelanggan;
 use App\Models\Produk;
 use App\Models\Pengguna;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
-        return view('transaksi.index', [
-            'transaksis' => Transaksi::with(['pelanggan', 'produk'])->paginate(10)
-        ]);
+        try {
+            return view('transaksi.index', [
+                'transaksis' => Transaksi::with(['pelanggan', 'produk'])->paginate(10)
+            ]);
+        } catch (Exception $e) {
+            return redirect()->route('transaksi.index')->withErrors('Terjadi kesalahan saat mengambil data transaksi.');
+        }
     }
 
     public function create()
@@ -72,7 +77,7 @@ class TransaksiController extends Controller
             return redirect()->route('transaksi.index')
                 ->with('success', 'Transaksi berhasil ditambahkan!');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return redirect()->back()
                 ->withInput()
@@ -82,18 +87,26 @@ class TransaksiController extends Controller
 
     public function show($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
-        return view('transaksi.show', compact('transaksi'));
+        try {
+            $transaksi = Transaksi::findOrFail($id);
+            return view('transaksi.show', compact('transaksi'));
+        } catch (Exception $e) {
+            return redirect()->route('transaksi.index')->withErrors('Data transaksi tidak ditemukan.');
+        }
     }
 
     public function edit($id)
     {
-        $transaksi = Transaksi::findOrFail($id);
-        $pelanggans = Pelanggan::all();
-        $produks = Produk::all();
-        $penggunas = Pengguna::all();
-        
-        return view('transaksi.edit', compact('transaksi', 'pelanggans', 'produks', 'penggunas'));
+        try {
+            $transaksi = Transaksi::findOrFail($id);
+            $pelanggans = Pelanggan::all();
+            $produks = Produk::all();
+            $penggunas = Pengguna::all();
+            
+            return view('transaksi.edit', compact('transaksi', 'pelanggans', 'produks', 'penggunas'));
+        } catch (Exception $e) {
+            return redirect()->route('transaksi.index')->withErrors('Terjadi kesalahan saat mengambil data transaksi untuk pengeditan.');
+        }
     }
 
     public function update(Request $request, $id)
@@ -167,7 +180,7 @@ class TransaksiController extends Controller
             return redirect()->route('transaksi.index')
                 ->with('success', 'Transaksi berhasil diupdate!');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return redirect()->back()
                 ->withInput()
@@ -177,8 +190,12 @@ class TransaksiController extends Controller
 
     public function delete($id)
     {
-        $transaksi = Transaksi::with('produk')->findOrFail($id);
-        return view('transaksi.delete', compact('transaksi'));
+        try {
+            $transaksi = Transaksi::with('produk')->findOrFail($id);
+            return view('transaksi.delete', compact('transaksi'));
+        } catch (Exception $e) {
+            return redirect()->route('transaksi.index')->withErrors('Terjadi kesalahan saat mengambil data transaksi untuk dihapus.');
+        }
     }
 
     public function destroy($id)
@@ -202,7 +219,7 @@ class TransaksiController extends Controller
             return redirect()->route('transaksi.index')
                 ->with('success', 'Transaksi berhasil dihapus dan stok produk telah dikembalikan!');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat menghapus transaksi: ' . $e->getMessage());

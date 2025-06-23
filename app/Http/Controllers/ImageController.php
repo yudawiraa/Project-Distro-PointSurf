@@ -35,10 +35,13 @@ class ImageController extends Controller
     {
         $image = Image::findOrFail($id);
 
+        // Hapus file dari storage
+        Storage::disk('public')->delete($image->image_path);
 
         // Hapus data dari database
         $image->delete();
 
         return redirect('/upload')->with('success', 'Gambar berhasil dihapus.');
-    }
+        
+    }
 }
