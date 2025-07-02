@@ -74,9 +74,9 @@
                     <select class="form-select @error('kategori') is-invalid @enderror" 
                             id="kategori" name="kategori">
                         <option value="">Pilih Kategori</option>
-                        <option value="Makanan" {{ old('kategori', $produk->kategori) == 'Makanan' ? 'selected' : '' }}>Makanan</option>
-                        <option value="Minuman" {{ old('kategori', $produk->kategori) == 'Minuman' ? 'selected' : '' }}>Minuman</option>
-                        <option value="Snack" {{ old('kategori', $produk->kategori) == 'Snack' ? 'selected' : '' }}>Snack</option>
+                        <option value="Jaket" {{ old('kategori', $produk->kategori) == 'Jaket' ? 'selected' : '' }}>Jaket</option>
+                        <option value="Baju" {{ old('kategori', $produk->kategori) == 'Baju' ? 'selected' : '' }}>Baju</option>
+                        <option value="Celana" {{ old('kategori', $produk->kategori) == 'Celana' ? 'selected' : '' }}>Celana</option>
                         <option value="Lainnya" {{ old('kategori', $produk->kategori) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     @error('kategori')

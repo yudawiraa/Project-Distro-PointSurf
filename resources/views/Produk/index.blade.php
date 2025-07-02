@@ -29,7 +29,7 @@
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>No</th>
                             <th>Nama Produk</th>
                             <th>Kategori</th>
                             <th>Harga</th>
@@ -38,9 +38,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($produks as $produk)
+                        @forelse($produks as $index => $produk)
                             <tr>
-                                <td>{{ $produk->id }}</td>
+                                <td>{{ $index + $produks->firstItem() }}</td>
                                 <td>{{ $produk->nama_produk }}</td>
                                 <td>{{ $produk->kategori }}</td>
                                 <td>Rp {{ number_format($produk->harga, 0, ',', '.') }}</td>
@@ -65,6 +65,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                {{ $produks->links() }}
             </div>
         </div>
     </div>

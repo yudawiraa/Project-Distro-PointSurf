@@ -52,6 +52,19 @@ class HomeController extends Controller
             ->take(5)
             ->get();
 
+        // Statistik penjualan per bulan (tahun berjalan)
+        $year = date('Y');
+        $monthlySales = Transaksi::selectRaw('EXTRACT(MONTH FROM created_at) as month, SUM(total_harga) as total')
+            ->whereRaw('EXTRACT(YEAR FROM created_at) = ?', [$year])
+            ->groupByRaw('EXTRACT(MONTH FROM created_at)')
+            ->orderByRaw('EXTRACT(MONTH FROM created_at)')
+            ->pluck('total', 'month');
+        // Siapkan array 12 bulan
+        $salesData = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $salesData[] = (int) ($monthlySales[$i] ?? 0);
+        }
+
         return view('home', compact(
             'totalProduk', 
             'totalPelanggan', 
@@ -61,7 +74,8 @@ class HomeController extends Controller
             'recentPelanggan',
             'topTransaksi',
             'productsInStock',
-            'productsOutOfStock'
+            'productsOutOfStock',
+            'salesData'
         ));
     }
 }

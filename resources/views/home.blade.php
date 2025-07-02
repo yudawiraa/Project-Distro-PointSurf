@@ -270,7 +270,7 @@
                               <span class="block">
                                 New transaction from {{ $transaksi->pelanggan->nama }}
                               </span>
-                              <span class="time">Rp {{ number_format($transaksi->total, 0, ',', '.') }}</span>
+                              <span class="time">Rp {{ number_format($transaksi->total > 0 ? $transaksi->total : $transaksi->total_harga, 0, ',', '.') }}</span>
                             </div>
                           </a>
                           @endforeach
@@ -902,7 +902,7 @@
           labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'],
           datasets: [{
             label: 'Total Penjualan',
-            data: [12000000, 15000000, 18000000, 14000000, 16000000, 19000000, 22000000, 20000000, 23000000, 25000000, 28000000, 30000000],
+            data: @json($salesData),
             backgroundColor: [
               'rgba(23, 125, 255, 0.6)',
               'rgba(23, 125, 255, 0.6)',

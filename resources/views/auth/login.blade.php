@@ -43,12 +43,12 @@
             <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
                 <div class="form-group">
-                    <label for="email" class="placeholder"><b>Email</b></label>
+                    <label for="email" class=""><b>Email</b></label>
                     <input id="email" name="email" type="email" class="form-control" value="{{ old('email') }}" required autofocus>
                 </div>
 
                 <div class="form-group">
-                    <label for="password" class="placeholder"><b>Password</b></label>
+                    <label for="password" class=""><b>Password</b></label>
                     <div class="position-relative">
                         <input id="password" name="password" type="password" class="form-control" required>
                         <div class="show-password">
