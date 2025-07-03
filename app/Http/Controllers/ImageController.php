@@ -42,6 +42,5 @@ class ImageController extends Controller
         $image->delete();
 
         return redirect('/upload')->with('success', 'Gambar berhasil dihapus.');
-        
-    }
+    }
 }

@@ -70,7 +70,7 @@
                             id="role" name="role">
                         <option value="">Pilih Role</option>
                         <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="karyawan" {{ old('role') == 'karyawan' ? 'selected' : '' }}>Karyawan</option>
                     </select>
                     @error('role')
                         <div class="invalid-feedback">{{ $message }}</div>

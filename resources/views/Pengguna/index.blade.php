@@ -32,15 +32,15 @@
                         <tr>
                             <th>ID</th>
                             <th>Nama Pengguna</th>
-                            <th>Email</th>
+                        
+                            <th>--></th>
                             <th>Role</th>
-                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($penggunas as $pengguna)
+                        @foreach($penggunas as $index => $pengguna)
                         <tr>
-                            <td>{{ $pengguna->id }}</td>
+                            <td>{{ $penggunas->firstItem() + $index }}</td>
                             <td>{{ $pengguna->nama_pengguna }}</td>
                             <td>{{ $pengguna->email }}</td>
                             <td>

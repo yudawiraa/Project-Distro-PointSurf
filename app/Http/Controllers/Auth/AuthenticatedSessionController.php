@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use App\Models\Pengguna;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -27,8 +28,19 @@ class AuthenticatedSessionController extends Controller
     {
         try {
             $request->authenticate();
-            
             $request->session()->regenerate();
+
+            // Sinkronisasi data user login ke tabel Pengguna
+            $user = Auth::user();
+            Pengguna::updateOrCreate(
+                ['username' => $user->email],
+                [
+                    'nama_pengguna' => $user->name,
+                    'username' => $user->email,
+                    'password' => $user->password,
+                    'role' => $user->role ?? 'karyawan',
+                ]
+            );
 
             return redirect()->intended(RouteServiceProvider::HOME)
                 ->with('success', 'Welcome back! You have been successfully logged in.');
