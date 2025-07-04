@@ -292,7 +292,7 @@ class TransaksiController extends Controller
             Log::info('Transaksi berhasil dihapus dan stok produk telah dikembalikan', ['transaksi_id' => $id]);
 
             return redirect()->route('transaksi.index')
-                ->with('success', 'Transaksi berhasil dihapus dan stok produk telah dikembalikan!');
+                ->with('success', 'Transaksi berhasil dihapus dan stok produk telah dikembalikan!!');
         } catch (Exception $e) {
             DB::rollback();
             // Log error saat gagal menghapus transaksi
