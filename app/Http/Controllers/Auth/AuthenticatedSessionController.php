@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use App\Models\Pengguna;
+use Illuminate\Support\Facades\Log;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -42,10 +43,19 @@ class AuthenticatedSessionController extends Controller
                 ]
             );
 
+            // Log informasi login berhasil
+            Log::info('User logged in successfully', ['user_id' => $user->id, 'username' => $user->email]);
+
             return redirect()->intended(RouteServiceProvider::HOME)
                 ->with('success', 'Welcome back! You have been successfully logged in.');
-                
+
         } catch (\Exception $e) {
+            // Log error jika login gagal
+            Log::error('Login attempt failed', [
+                'error_message' => $e->getMessage(),
+                'input' => $request->only('email')
+            ]);
+
             return back()
                 ->withInput($request->only('email'))
                 ->with('error', 'Invalid credentials. Please try again.');
@@ -57,6 +67,9 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        // Log informasi saat pengguna logout
+        Log::info('User logged out successfully', ['user_id' => Auth::id()]);
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
